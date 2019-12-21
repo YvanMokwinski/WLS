@@ -1,15 +1,15 @@
 #include <iostream>
 #include <valarray>
 
-#include "WLS/Direct/MKL/Pardiso.hpp"
-#include "WLS/Iterative/MKL/Fgmres.hpp"
+#include "Direct/MKL/Pardiso.hpp"
+#include "Iterative/MKL/Fgmres.hpp"
 //#include "WLS/Preconditioner/MKL/Ilut.hpp"
 #include "Assert.hpp"
 #include "TestFixture.hpp"
 #include <array>
-#include "WLS/Sparse/Matrix.hpp"
-#include "WLS/Preconditioner/MKL/Ilu0.hpp"
-#include "WLS/Preconditioner/MKL/Ilut.hpp"
+#include "Sparse/Matrix.hpp"
+#include "Preconditioner/MKL/Ilu0.hpp"
+#include "Preconditioner/MKL/Ilut.hpp"
 
 void TestSolveLinearSystem(WLS::IInverseOperator& 	inverseOperator_,
 			   const double * 		rhs_,

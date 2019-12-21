@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WLS/ILinearOperator.hpp"
+#include "ILinearOperator.hpp"
 
 #define MKL_ILP64 1
 #include "mkl.h"

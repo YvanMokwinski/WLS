@@ -1,7 +1,7 @@
 #pragma once
 
-#include "WLS/ILinearOperator.hpp"
-#include "WLS/Iterative/MKL/Parameters.hpp"
+#include "ILinearOperator.hpp"
+#include "Iterative/MKL/Parameters.hpp"
 
 #define MKL_ILP64 1
 #include "mkl.h"

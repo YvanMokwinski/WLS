@@ -1,5 +1,5 @@
 
-#include "WLS/Sparse/WorkingRow/Sorted.hpp"
+#include "Sparse/WorkingRow/Sorted.hpp"
 #include "Assert.hpp"
 #include "TestFixture.hpp"
 #include <array>

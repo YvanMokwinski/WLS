@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WLS/Sparse/WorkingRow/CRTP.hpp"
+#include "Sparse/WorkingRow/CRTP.hpp"
 namespace WLS
 {
 

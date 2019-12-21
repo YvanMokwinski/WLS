@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WLS/IInverseOperator.hpp"
+#include "IInverseOperator.hpp"
 
 namespace WLS
 {

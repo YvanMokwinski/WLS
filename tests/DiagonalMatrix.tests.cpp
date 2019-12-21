@@ -1,5 +1,5 @@
 
-#include "WLS/DiagonalMatrix.hpp"
+#include "DiagonalMatrix.hpp"
 #include "Assert.hpp"
 #include "TestFixture.hpp"
 #include <array>

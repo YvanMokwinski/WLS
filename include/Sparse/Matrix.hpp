@@ -1,10 +1,10 @@
 #pragma once
 
-#include "WLS/WLSConfig.hpp"
-#include "WLS/ILinearOperator.hpp"
-#include "WLS/Sparse/SparsityPattern.hpp"
-#include "WLS/Sparse/OpMatrixAssembly.hpp"
-#include "WLS/Sparse/SpBlas.hpp"
+#include "WLSConfig.hpp"
+#include "ILinearOperator.hpp"
+#include "Sparse/SparsityPattern.hpp"
+#include "Sparse/OpMatrixAssembly.hpp"
+#include "Sparse/SpBlas.hpp"
 
 namespace WLS
 {

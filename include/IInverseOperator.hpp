@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WLS/WLSConfig.hpp"
+#include "WLSConfig.hpp"
 #include <string> 
 namespace WLS
 {
