@@ -34,7 +34,7 @@ compile: \
 	$(mpi_source_test:%.cpp=%.valgrind.debug.exe) \
 	$(mpi_source_test:%.cpp=%.valgrind.exe)
 
-HEADERS=-I./ -Iinclude -I../Common/include -I../
+HEADERS=-I./ -Iinclude -I../WCOMMON/include -I../
 CFLAGS_DEBUG=-g -Wall -Werror 
 CFLAGS= -O3 -DNDEBUG -Wall -Werror
 CPP=g++ -std=c++11
@@ -99,5 +99,5 @@ perform_test:$(source_test:%.cpp=%.exe.log) $(source_test:%.cpp=%.debug.exe.log)
 
 
 clean:
-	\rm -f Tests/*.exe Tests/*.log Tests/*~ include/*~ src/*~
+	\rm -f tests/*.exe tests/*.log tests/*~ include/*~ src/*~
 
