@@ -9,13 +9,6 @@ namespace WLS
     /// </summary>
     class blas_t
     {
-
-#ifdef WLS_ILP64
-    public: using integer_t = long long int;
-#else
-    public: using integer_t = int;
-#endif
-    public: using integer_pt = integer_t*;
     
       /// <summary>
       /// General matrix vector product for a sparse matrix with the Compressed Sparse Row format with 1-based indexing.
@@ -28,10 +21,10 @@ namespace WLS
       /// <param name="x">Input vector.</param>
       /// <param name="y">Output vector.</param>
     public: template <typename real_t> static void csrgemv1based(const char* transa_,
-								 const integer_t m_,
+								 const wls_int_t m_,
 								 const real_t * a_,
-								 const integer_pt ia_,
-								 const integer_pt ja_,
+								 const_wls_int_p ia_,
+								 const_wls_int_p ja_,
 								 const real_t*x_,
 								 real_t*y_);
     
@@ -66,10 +59,10 @@ namespace WLS
     public: template <typename real_t> static void csrtrsv1based(const char* uplo_,
 								 const char* transa_,
 								 const char* diag_,
-								 const integer_t m_,
+								 const wls_int_t m_,
 								 const real_t* a_,
-								 const integer_pt ia_,
-								 const integer_pt ja_,
+								 const_wls_int_p ia_,
+								 const_wls_int_p ja_,
 								 const real_t* x_,
 								 real_t* y_);
     
@@ -106,10 +99,10 @@ namespace WLS
     public: template <typename real_t> static void csrtrsv0based(const char* uplo_,
 								 const char* transa_,
 								 const char* diag_,
-								 const integer_t m_,
+								 const wls_int_t m_,
 								 const real_t* a_,
-								 const integer_pt ia_,
-								 const integer_pt ja_,
+								 const_wls_int_p ia_,
+								 const_wls_int_p ja_,
 								 const real_t* x_,
 								 real_t* y_);
     

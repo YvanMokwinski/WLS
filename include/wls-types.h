@@ -36,11 +36,6 @@ typedef const wls_int_t * __restrict__ const_wls_int_p;
 //!
 typedef char wls_str_t[256];
 
-#ifdef WLS_ILP64
-typedef long long int integer_t;
-#else
-typedef int integer_t;
-#endif
 typedef wls_int_t wls_status_t;
 
 

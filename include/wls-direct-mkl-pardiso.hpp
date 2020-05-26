@@ -168,8 +168,8 @@ namespace WLS
   
 	class Parameters
 	{
-	private:
-	  WLS::integer_t	m_iparm[64] {0};
+	private:	
+	  wls_int_t	m_iparm[64] {0};
 	  void * 	m_pt[64] {NULL};
 	
 	public:
@@ -216,7 +216,7 @@ namespace WLS
 	  /// <summary>
 	  /// The arrya of the integer parameters.
 	  /// </summary>
-	  inline WLS::integer_pt GetParamIntegers()
+	  inline wls_int_p GetParamIntegers()
 	  {
 	    return this->m_iparm;
 	  };
@@ -298,17 +298,17 @@ namespace WLS
 	//!
 	//! @brief Type of the matrix.
 	//!
-	static const WLS::integer_t s_mtype = (int) MatrixType::ReadAndUnsymmetric;
+	static const wls_int_t s_mtype = (int) MatrixType::ReadAndUnsymmetric;
 	
 	//!
 	//! @brief Maximal number of factors in memory. Generally used value is 1.
 	//!
-	static const WLS::integer_t s_maxfct = 1;
+	static const wls_int_t s_maxfct = 1;
 
 	//!
 	//! @brief The number of matrix (from 1 to <see cref="s_maxfct"/>) to solve.
 	//!
-	static const WLS::integer_t s_mnum = 1;
+	static const wls_int_t s_mnum = 1;
 	
 	//!
 	//! @brief Message level information.
@@ -317,12 +317,12 @@ namespace WLS
 	/// 0: PARDISO generates no output
 	/// 1: PARDISO prints statistical information
 	/// </remarks>
-	static const WLS::integer_t s_msglvl = 0;
+	static const wls_int_t s_msglvl = 0;
 	
 	//!
 	//! @brief We fix the number of right-hand sides.
 	//!
-	static const WLS::integer_t s_nrhs = 1;
+	static const wls_int_t s_nrhs = 1;
 
 	//!
 	//! @brief Array of pointers.
@@ -336,9 +336,9 @@ namespace WLS
 	
 	//! @brief The matrix.
 
-	WLS::integer_t  	m_size		{0};
-	WLS::integer_pt 	m_begin   	{NULL};
-	WLS::integer_pt 	m_indices 	{NULL};
+	wls_int_t  	m_size		{0};
+	wls_int_p 	m_begin   	{NULL};
+	wls_int_p 	m_indices 	{NULL};
 	double*__restrict__ m_values  		{NULL};
 	
 	bool m_symbolicFactorizationDone 	{false};
@@ -406,24 +406,24 @@ namespace WLS
 
       
       static void CallPardiso(Parameters *parameters,
-			      WLS::integer_t maxfct,
-			      WLS::integer_t mnum,
-			      WLS::integer_t mtype,
+			      wls_int_t maxfct,
+			      wls_int_t mnum,
+			      wls_int_t mtype,
 			      const Job::Value job,
-			      WLS::integer_t n,
+			      wls_int_t n,
 			      double* __restrict__ a,
-			      WLS::integer_pt ia,
-			      WLS::integer_pt ja,
-			      WLS::integer_pt perm,
-			      WLS::integer_t nrhs,
-			      WLS::integer_t msglvl,
+			      wls_int_p ia,
+			      wls_int_p ja,
+			      wls_int_p perm,
+			      wls_int_t nrhs,
+			      wls_int_t msglvl,
 			      double* __restrict__ b,
 			      double* __restrict__ x,
 			      Error::Value* outError)
       {
 #ifdef WLS_WITH_MKL
-	WLS::integer_t err;
-	WLS::integer_t phase = (WLS::integer_t) job;
+	wls_int_t err;
+	wls_int_t phase = (wls_int_t) job;
 	pardiso(parameters->GetHandle(),
 		&maxfct,
 		&mnum,
@@ -446,9 +446,9 @@ namespace WLS
       };
 	
       public:	
-	Pardiso(const WLS::integer_t 	size_,
-		WLS::integer_pt 	begin_,
-		WLS::integer_pt 	indices_,
+	Pardiso(const wls_int_t 	size_,
+		wls_int_p 	begin_,
+		wls_int_p 	indices_,
 		double* __restrict__ 	values_,
 		bool fortranIndexing = true)
 	  : m_size(size_),
@@ -469,7 +469,7 @@ namespace WLS
 	void apply(const char * transpose,
 		   double* __restrict__ y,
 		   const double* __restrict__  x,
-		   WLS::integer_t tmpSize,
+		   wls_int_t tmpSize,
 		   double* __restrict__ tmp,
 		   bool* outHasFailed)
 	{
@@ -551,7 +551,7 @@ namespace WLS
          *outHasFailed = m_error != Error::NoError;
 	};
 
-	virtual WLS::integer_t get_buffer_size() const
+	virtual wls_int_t get_buffer_size() const
 	{
 	  return 0;
 	};

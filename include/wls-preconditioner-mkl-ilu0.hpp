@@ -1,8 +1,7 @@
 ﻿#pragma once
 
-#include "ILinearOperator.hpp"
-#include "Iterative/MKL/Parameters.hpp"
-#include "WLS_MKL.hpp"
+#include "wls.hpp"
+#include "wls-iterative-mkl-parameters.hpp"
 
 namespace WLS
 {
@@ -178,7 +177,7 @@ namespace WLS
 	  this->m_A 		= A;
 	  this->m_ilu0Values 	= (double * __restrict__)malloc(sizeof(double)*A->GetNC());
 
-	  WLS::integer_t* paramIntegers 	= parameters->GetParamIntegers();
+	  wls_int_t* paramIntegers 	= parameters->GetParamIntegers();
 	  double * __restrict__ paramReals 	= parameters->GetParamReals();
 	    
 	  //
@@ -211,7 +210,7 @@ namespace WLS
       public:
 	  
 	/// <see cref="IInverseOperator.SizeOfTemporaryVector"/>>
-	WLS::integer_t GetSizeOfTemporaryVector()const
+	wls_int_t GetSizeOfTemporaryVector()const
 	{
 	  return this->m_A->GetN();
 	};
@@ -247,8 +246,8 @@ namespace WLS
 	  //
 	    
 	  {
-	    WLS::integer_t n = this->m_A->GetN();
-	    WLS::integer_t lierr;
+	    wls_int_t n = this->m_A->GetN();
+	    wls_int_t lierr;
 	    dcsrilu0(&n,
 		     this->m_A->GetX(),
 		     this->m_A->GetB(),
@@ -288,7 +287,7 @@ namespace WLS
 	void Apply(const char*	transpose,
 		   double * __restrict__ 		y,
 		   const double * __restrict__		x,
-		   const WLS::integer_t  		tmpSize,
+		   const wls_int_t  		tmpSize,
 		   double * __restrict__  		tmp,
 		   bool* 		outHasFailed)
 	{
@@ -297,7 +296,7 @@ namespace WLS
 	  *outHasFailed = true;
 #else
 	  *outHasFailed = false;
-	  WLS::integer_t dimension = this->m_A->GetN();
+	  wls_int_t dimension = this->m_A->GetN();
 
 	  const char * sL = "L";
 	  const char * sU = "U";

@@ -1,8 +1,7 @@
 ﻿#pragma once
 
-#include "ILinearOperator.hpp"
-#include "Iterative/MKL/Parameters.hpp"
-#include "WLS_MKL.hpp"
+#include "wls.hpp"
+#include "wls-iterative-mkl-parameters.hpp"
 
 namespace WLS
 {
@@ -205,7 +204,7 @@ namespace WLS
 	/// Maximum fill-in, which is half of the preconditioner bandwidth. 
 	/// The number of non-zero elements in the rows of the preconditioner cannot exceed (2*<see cref="m_maxfil"/>+1)
 	/// </summary>
-      private: WLS::integer_t m_maxfil;
+      private: wls_int_t m_maxfil;
 	
 	/// <summary>
 	/// Parameter from RCI FGMRES, first initialized by the FGMRES method.
@@ -223,15 +222,15 @@ namespace WLS
 	/// <param name="n_">The dimension.</param>
 	/// <param name="maxfil_">The maximum fill.</param>
 	/// <returns>The required number of coefficients.</returns>
-      private: static WLS::integer_t GetRequiredNumberOfCoefficients(const WLS::integer_t n_,
-							const WLS::integer_t maxfil_)
+      private: static wls_int_t GetRequiredNumberOfCoefficients(const wls_int_t n_,
+							const wls_int_t maxfil_)
 	{
 	  return (2 * maxfil_ + 1) * n_ - maxfil_ * (maxfil_ + 1) + 1;
 	};
 
 	
 	/// <see cref="IInverseOperator.SizeOfTemporaryVector"/>>
-      public: WLS::integer_t GetSizeOfTemporaryVector()const
+      public: wls_int_t GetSizeOfTemporaryVector()const
 	{
 	  return this->m_A->GetN();
 	};
@@ -262,7 +261,7 @@ namespace WLS
 	/// <param name="parameters">Parameters of the RCI FGMRES computations, first initialized by the MKL FGMRES.</param>
       public: Ilut(Sparse::Matrix<double>* A_,
 		   const double tol_,
-		   const WLS::integer_t maxfil_,
+		   const wls_int_t maxfil_,
 		   WLS::Iterative::MKL::Parameters * parameters_)
 	{
 	  
@@ -275,7 +274,7 @@ namespace WLS
 	  this->m_A = A_;
 
 	  
-	  WLS::integer_t* paramIntegers 	= this->m_parameters->GetParamIntegers();
+	  wls_int_t* paramIntegers 	= this->m_parameters->GetParamIntegers();
 	  double * __restrict__ paramReals 	= this->m_parameters->GetParamReals();
 	  
 	  //
@@ -298,12 +297,12 @@ namespace WLS
 	  //
 	  // Get the dimension
 	  //
-	  const WLS::integer_t N = this->m_A->GetN();
+	  const wls_int_t N = this->m_A->GetN();
 	  
 	  //
 	  // Compute the required number of coefficient.
 	  //
-	  const WLS::integer_t requiredNumberOfCoefficients = Ilut::GetRequiredNumberOfCoefficients(N,
+	  const wls_int_t requiredNumberOfCoefficients = Ilut::GetRequiredNumberOfCoefficients(N,
 										       this->m_maxfil);
 	  
 
@@ -349,8 +348,8 @@ namespace WLS
 	  //
 	    
 	  {
-	    WLS::integer_t n = this->m_A->GetN();
-	    WLS::integer_t lierr = 0;
+	    wls_int_t n = this->m_A->GetN();
+	    wls_int_t lierr = 0;
 #ifdef WLS_WITH_MKL	    
 	    dcsrilut(&n,
 		     this->m_A->GetX(),
@@ -397,14 +396,14 @@ namespace WLS
       public: void Apply(const char*	transpose_,
 			 double * __restrict__		y_,
 			 const double * __restrict__	x_,
-			 const WLS::integer_t  	tmpSize_,
+			 const wls_int_t  	tmpSize_,
 			 double * __restrict__ 		tmp_,
 			 bool* 		outHasFailed_)
 	{
 #ifdef WLS_WITH_MKL	          
 
 	  *outHasFailed_ = false;
-	  WLS::integer_t dimension = this->m_A->GetN();
+	  wls_int_t dimension = this->m_A->GetN();
 
 	  static constexpr const char * s_lowerTriangle = "L";
 	  static constexpr const char * s_upperTriangle = "U";

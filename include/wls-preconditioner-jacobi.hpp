@@ -68,7 +68,7 @@ namespace WLS
       };
      
       /// <see cref="IInverseOperator.SizeOfTemporaryVector"/>>
-      WLS::integer_t GetSizeOfTemporaryVector() const noexcept
+      wls_int_t GetSizeOfTemporaryVector() const noexcept
       {
 	return 1;
       };
@@ -77,7 +77,7 @@ namespace WLS
       void Apply(const char*	transpose,
 		 double*__restrict__ 		y,
 		 const double*__restrict__ 	x,
-		 const WLS::integer_t	tmpSize,
+		 const wls_int_t	tmpSize,
 		 double*__restrict__  		tmp,
 		 bool* 		outHasFailed) noexcept
       {

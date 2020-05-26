@@ -169,7 +169,7 @@ int main(int 		argc,
   }
   
   bool verbose = cmd.get_logical("-v");
-  WLS::integer_t nt;
+  wls_int_t nt;
   if (!cmd.get_integer("--nt",&nt))
     {
       if (verbose)
@@ -188,23 +188,23 @@ int main(int 		argc,
   const char * ifilename = cmd.get_arg(1);
   using real_t = double;
  
-  WLS::integer_t * 	mat_begin = nullptr;
-  WLS::integer_t * 	mat_idx = nullptr;
+  wls_int_t * 	mat_begin = nullptr;
+  wls_int_t * 	mat_idx = nullptr;
   real_t * 		mat_values = nullptr;
  
 
-  WLS::integer_t 	mat_nrows;
-  WLS::integer_t  	mat_ncols;
-  WLS::integer_t  	mat_nnz;
-  WLS::integer_t nmax_per_row, nmin_per_row;
+  wls_int_t 	mat_nrows;
+  wls_int_t  	mat_ncols;
+  wls_int_t  	mat_nnz;
+  wls_int_t nmax_per_row, nmin_per_row;
 
-  WLS::Input::matrix_market_t matrix_market;
+  WLS::input::matrix_market_t matrix_market;
   WLS::status_t status;
 
-  status = WLS::Input::matrix_market_t::create(&matrix_market,ifilename);
+  status = WLS::input::matrix_market_t::create(&matrix_market,ifilename);
   if (WLS::status_t::success != status)
     {
-      fprintf(stderr,"status(=" iformat ")", (WLS::integer_t)status);
+      fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
       return status;
     }
   
@@ -213,7 +213,7 @@ int main(int 		argc,
 						 &mat_nnz);
   if (WLS::status_t::success != status)
     {
-      fprintf(stderr,"status(=" iformat ")", (WLS::integer_t)status);
+      fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
       return status;
     }
 
@@ -221,14 +221,14 @@ int main(int 		argc,
   //
   // Allocate.
   //
-  mat_begin 	= (WLS::integer_t*)calloc((mat_nrows+1),sizeof(WLS::integer_t));
+  mat_begin 	= (wls_int_t*)calloc((mat_nrows+1),sizeof(wls_int_t));
   if (nullptr == mat_begin)
     {
       status = status_t::error_memory;
       goto state_error;
     }
    
-  mat_idx	= (WLS::integer_t*)malloc(sizeof(WLS::integer_t)*(mat_nnz));
+  mat_idx	= (wls_int_t*)malloc(sizeof(wls_int_t)*(mat_nnz));
   if (nullptr == mat_idx)
     {
       status = status_t::error_memory;
@@ -251,7 +251,7 @@ int main(int 		argc,
 			     mat_begin);
   if (status)
     {
-      fprintf(stderr,"error(=" iformat ")", (WLS::integer_t)status);
+      fprintf(stderr,"error(=" iformat ")", (wls_int_t)status);
       return status;
     }
     
@@ -274,9 +274,9 @@ int main(int 		argc,
 
   nmax_per_row = mat_begin[1] - mat_begin[0];
   nmin_per_row = mat_begin[1] - mat_begin[0];
-  for (WLS::integer_t irow = 1;irow < mat_nrows;++irow)
+  for (wls_int_t irow = 1;irow < mat_nrows;++irow)
     {
-      WLS::integer_t n_per_row = mat_begin[irow+1] - mat_begin[irow];
+      wls_int_t n_per_row = mat_begin[irow+1] - mat_begin[irow];
       nmax_per_row = std::max(nmax_per_row,n_per_row);	
       nmin_per_row = std::min(nmin_per_row,n_per_row);	
     }

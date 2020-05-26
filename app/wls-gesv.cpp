@@ -139,30 +139,30 @@ void wls_gesv_manpage(const char * filename_,
 
 
 
-WLS::status_t calculate_solution(WLS::inverse_operator& 	inverseOperator_,
+WLS::status_t calculate_solution(WLS::inverse_operator& 	inverse_op_,
 				 const double * 		rhs_,
 				 double * 		x_,
-				 WLS::integer_t          rwork_n_,
+				 wls_int_t          rwork_n_,
 				 double * 		rwork_)
 {
   bool hasFailed;
-  inverseOperator_.compute(&hasFailed);
+  inverse_op_.compute(&hasFailed);
   if (hasFailed)
     {
-      std::cerr << "compute failed: " << inverseOperator_.get_error_message()  << std::endl;
+      std::cerr << "compute failed: " << inverse_op_.get_error_message()  << std::endl;
       exit(1);
     }
   
-  inverseOperator_.apply("No transpose",
-			 x_,
-			 rhs_,
-			 rwork_n_,
-			 rwork_,
-			 &hasFailed);
+  inverse_op_.apply("No transpose",
+		    x_,
+		    rhs_,
+		    rwork_n_,
+		    rwork_,
+		    &hasFailed);
   
   if (hasFailed)
     {
-      std::cerr << "apply failed: " << inverseOperator_.get_error_message()  << std::endl;
+      std::cerr << "apply failed: " << inverse_op_.get_error_message()  << std::endl;
       exit(1);
     }
   return WLS::status_t::success;
@@ -204,7 +204,7 @@ int main(int 		argc,
   }
   
   bool verbose = cmd.get_logical("-v");
-  WLS::integer_t nt;
+  wls_int_t nt;
   if (!cmd.get_integer("--nt",&nt))
     {
       if (verbose)
@@ -232,7 +232,8 @@ int main(int 		argc,
   using real_t = double;
   
   WLS::sparse::matrix_t<real_t> a;
-  status_t status = WLS::Input::matrix_market_t::import(&a, a_filename);
+  status_t status = WLS::input::matrix_market_t::import(&a,
+							a_filename);
   if (status)
     {
       return status;
@@ -240,7 +241,8 @@ int main(int 		argc,
 
   
   WLS::dense::matrix rhs;
-  status = WLS::Input::matrix_market_t::import(rhs, rhs_filename);
+  status = WLS::input::matrix_market_t::import(rhs,
+					       rhs_filename);
   if (status)
     {
       return status;
@@ -249,10 +251,11 @@ int main(int 		argc,
   WLS::dense::matrix x(rhs.m,rhs.n);
 
 
+  
   WLS::Direct::MKL::Pardiso pardiso(a.GetN(),a.GetB(),a.GetI(),a.GetX());
 
   double* rwork = nullptr;
-  WLS::integer_t rwork_n = pardiso.get_buffer_size();
+  wls_int_t rwork_n = pardiso.get_buffer_size();
   if (rwork_n>0)
     {
       rwork = new double[rwork_n];
@@ -265,9 +268,8 @@ int main(int 		argc,
       delete[] rwork;
       rwork = nullptr;
     }
-
   
-  { WLS::Output::matrix_market_t output(ofilename);
+  { WLS::output::matrix_market_t output(ofilename);
   output << "%\n";
   output << "% date: " << __DATE__ << "\n";  
   output << "% solution linear system, matrix: '" << a_filename << "', rhs: '" << rhs_filename << "'\n";

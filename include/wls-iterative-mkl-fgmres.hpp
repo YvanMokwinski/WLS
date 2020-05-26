@@ -5,7 +5,6 @@
 #include "WLA/include/BlasMKL.hpp"
 #include "WLS_MKL.hpp"
 
-
 namespace WLS
 {
   namespace Iterative
@@ -205,7 +204,7 @@ namespace WLS
 	  //!
 	  //! @brief Set the maximum number of iterations.
 	  //!
-	  void SetMaximumNumberOfIterations(const WLS::integer_t  value)
+	  void SetMaximumNumberOfIterations(const wls_int_t  value)
 	  {
 	    this->m_ipar[4] = value;
 	  }
@@ -213,7 +212,7 @@ namespace WLS
 	  //!
 	  //! @brief Set the maximum number of non-restarted iterations.
 	  //!
-	  void SetMaximumNumberOfNonRestartedIterations(const WLS::integer_t  value)
+	  void SetMaximumNumberOfNonRestartedIterations(const wls_int_t  value)
 	  {
 	    this->m_ipar[14] = value;
 	  };
@@ -244,7 +243,7 @@ namespace WLS
 	  //!
 	  //! @brief Get the index of the source temporary vector.
 	  //!
-	  WLS::integer_t  GetIndexOfSourceTemporaryVector()const
+	  wls_int_t  GetIndexOfSourceTemporaryVector()const
 	  {
 	    return this->m_ipar[21] - 1;
 	  };
@@ -252,7 +251,7 @@ namespace WLS
 	  //!
 	  //! @brief Get the index of output temporary vector.
 	  //!
-	  WLS::integer_t  GetIndexOfOutputTemporaryVector()const
+	  wls_int_t  GetIndexOfOutputTemporaryVector()const
 	  {
 	    return this->m_ipar[22] - 1;
 	  };
@@ -351,7 +350,7 @@ namespace WLS
 	  //! @param maximumNumberOfNonRestartedIterations The maximum number of non-restarted iterations.
 	  //! @param n The dimension.
 	  /// @return The required memory.
-	  static WLS::integer_t  GetRequiredMemory(const int maximumNumberOfNonRestartedIterations, const WLS::integer_t  n)
+	  static wls_int_t  GetRequiredMemory(const int maximumNumberOfNonRestartedIterations, const wls_int_t  n)
 	  {
 	    return ((2 * maximumNumberOfNonRestartedIterations + 1) * n +
 		    maximumNumberOfNonRestartedIterations * (maximumNumberOfNonRestartedIterations + 9) / 2 + 1);
@@ -370,14 +369,14 @@ namespace WLS
 	//! @param request OUTPUT:Gives information about the result of the routine.
 	//! @param parameters OUTPUT: The parameters. 
 	//! @param rwork OUTPUT: Array of size ((2*parameters[14] + 1)*n + parameters[14]*(parameters[14 - 1] + 9)/2 + 1).
-	static void Init(const WLS::integer_t  		n,
+	static void Init(const wls_int_t  		n,
 			 Status::Value* 	refStatus,
 			 ParametersFgmres& 	parameters,
 			 double*__restrict__ 		rwork)
 	{
 #ifdef WLS_WITH_MKL
-	  WLS::integer_t  ln = n;
-	  WLS::integer_t  status = (WLS::integer_t)*refStatus;
+	  wls_int_t  ln = n;
+	  wls_int_t  status = (wls_int_t)*refStatus;
 
 	  dfgmres_init(&ln,
 		       NULL,
@@ -399,13 +398,13 @@ namespace WLS
 	//! @param rwork OUTPUT: Array of size ((2*parameters [14] + 1)*n  + parameters [14]*(parameters [14] + 9)/2 + 1).
 	//! @param request OUTPUT: Gives information about result of the routine.
 	static void Check(ParametersFgmres&parameters,
-			  const WLS::integer_t  n,
+			  const wls_int_t  n,
 			  double*__restrict__ rwork,
 			  Status::Value* refStatus)
 	{
 #ifdef WLS_WITH_MKL
-	  WLS::integer_t  ln = n;
-	  WLS::integer_t  status = (WLS::integer_t) *refStatus;
+	  wls_int_t  ln = n;
+	  wls_int_t  status = (wls_int_t) *refStatus;
 	  dfgmres_check(&ln,
 			NULL,
 			NULL,
@@ -429,16 +428,16 @@ namespace WLS
 	//! @param rwork INPUT:Array of size ((2*parameters [14] + 1)*n  + parameters [14]*(parameters [14] + 9)/2 + 1).
 	//! @param itercount OUTPUT: Contains the value of the current iteration number.
 	static void Get(ParametersFgmres&parameters,
-			const WLS::integer_t  n,
+			const wls_int_t  n,
 			double*__restrict__ sol,
 			double*__restrict__ rhs,
 			double*__restrict__ rwork,
 			Status::Value* refStatus,
-			WLS::integer_t& itercount)
+			wls_int_t& itercount)
 	{
 #ifdef WLS_WITH_MKL	  
-	  WLS::integer_t  ln = n;
-	  WLS::integer_t  status = (WLS::integer_t)*refStatus;
+	  wls_int_t  ln = n;
+	  wls_int_t  status = (wls_int_t)*refStatus;
 
 	  dfgmres_get(&ln,
 		      sol,
@@ -464,15 +463,15 @@ namespace WLS
 	//! @param rwork INPUT/OUTPUT:The working array.
 	//! @param request OUTPUT: Gives information about result of the routine.
 	static inline void Run(ParametersFgmres& parameters,
-			       const WLS::integer_t  n,
+			       const wls_int_t  n,
 			       double*__restrict__ sol,
 			       const double*__restrict__ rhs,
 			       double*__restrict__ rwork,
 			       Status::Value* refStatus)
 	{	
 #ifdef WLS_WITH_MKL
-	  WLS::integer_t  ln = n;
-	  WLS::integer_t  status = (WLS::integer_t) *refStatus;
+	  wls_int_t  ln = n;
+	  wls_int_t  status = (wls_int_t) *refStatus;
 	  dfgmres(&ln,
 		  sol,
 		  (double*__restrict__)rhs,
@@ -494,7 +493,7 @@ namespace WLS
 	//!
 	//! @brief The size of the linear system.
 	//!
-	WLS::integer_t  m_n;
+	wls_int_t  m_n;
      
 	//!
 	//! @brief The parameters.
@@ -527,7 +526,7 @@ namespace WLS
 	std::string m_errorMessage;
 
      
-	static const WLS::integer_t  s_maximumNumberOfNonRestartedIterations = 30;
+	static const wls_int_t  s_maximumNumberOfNonRestartedIterations = 30;
 
 	//!
 	//! @brief Get the required memory to run the MKL Conjugate Gradient method. 
@@ -535,8 +534,8 @@ namespace WLS
 	//! @param size The size of the linear system to solve.
 	//! @param maximumNumberOfNonRestartedIterations The maximum number of non-restarted iterations.
 	/// @return The size of the required array of double.
-	static WLS::integer_t  GetRequiredMemory(WLS::integer_t  size,
-						  WLS::integer_t  maximumNumberOfNonRestartedIterations = s_maximumNumberOfNonRestartedIterations)
+	static wls_int_t  GetRequiredMemory(wls_int_t  size,
+						  wls_int_t  maximumNumberOfNonRestartedIterations = s_maximumNumberOfNonRestartedIterations)
 	{
 	  return ParametersFgmres::GetRequiredMemory(maximumNumberOfNonRestartedIterations, size);
 	};
@@ -558,11 +557,11 @@ namespace WLS
 	//! @param relativeTolerance The relative tolerance.
 	//! @param maximumNumberOfNonRestartedIterations The maximum number of non-restarted iterations.
 	//! @param hasPreconditioner The matrix vector product operator.
-	Fgmres(const WLS::integer_t  size,
+	Fgmres(const wls_int_t  size,
 	       ILinearOperator* matrixVectorProductOperator,
-	       const WLS::integer_t  numMaxIter,
+	       const wls_int_t  numMaxIter,
 	       const double relativeTolerance = 1.0e-6,
-	       const WLS::integer_t  maximumNumberOfNonRestartedIterations = s_maximumNumberOfNonRestartedIterations,
+	       const wls_int_t  maximumNumberOfNonRestartedIterations = s_maximumNumberOfNonRestartedIterations,
 	       const bool hasPreconditioner = true)
 	{
        
@@ -693,12 +692,12 @@ namespace WLS
 	  this->m_EuclidianNormOfResidual = value;
 	};
 
-	WLS::integer_t  m_numIterations;
-	WLS::integer_t  GetNumIterations()const
+	wls_int_t  m_numIterations;
+	wls_int_t  GetNumIterations()const
 	{
 	  return this->m_numIterations;
 	};
-	void SetNumIterations(const WLS::integer_t  value)
+	void SetNumIterations(const wls_int_t  value)
 	{
 	  this->m_numIterations = value;
 	};
@@ -737,7 +736,7 @@ namespace WLS
      
      
 
-	WLS::integer_t  GetSizeOfTemporaryVector() const
+	wls_int_t  GetSizeOfTemporaryVector() const
 	{
 	  if (m_parameters.IsPreconditionedMethod())
 	    {
@@ -753,15 +752,15 @@ namespace WLS
 	void Apply(const char * transpose,
 		   double*__restrict__ y,
 		   const double*__restrict__ x,
-		   const WLS::integer_t  tmpSize,
+		   const wls_int_t  tmpSize,
 		   double*__restrict__ tmp,
 		   bool* outHasFailed)
 	{
        
 	  *outHasFailed = false;
        
-	  WLS::integer_t  numApplyPreconditioner = 0;
-	  WLS::integer_t  numMatrixVectorProduct = 0;
+	  wls_int_t  numApplyPreconditioner = 0;
+	  wls_int_t  numMatrixVectorProduct = 0;
 	  //
 	  // Checks consistency and correctness of the user defined data. 
 	  //
@@ -882,7 +881,7 @@ namespace WLS
 	      {
 	     
 		Status::Value requestGet = m_status;
-		WLS::integer_t  itercount = 0;
+		wls_int_t  itercount = 0;
 
 		Get(m_parameters,
 		    m_n,
@@ -907,7 +906,7 @@ namespace WLS
 						  m_rwork,
 						  m_matrixVectorProductOperator);
 #endif
-		static const WLS::integer_t  n1 = 1;
+		static const wls_int_t  n1 = 1;
 		this->SetEuclidianNormOfResidual(BlasMKL::nrm2(&m_n, m_rwork,&n1));
 #if 0
 		DebugVerbose(string.Format("NumIter  = {0}, EuclidianNormOfResidual = {1}", itercount,

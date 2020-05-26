@@ -140,22 +140,21 @@ void wls_residual_manpage(const char * filename_,
 };
 
 
-
-WLS::status_t calculate_solution(WLS::inverse_operator& 	inverseOperator_,
+WLS::status_t calculate_solution(WLS::inverse_operator& 	inverse_op_,
 				 const double * 		rhs_,
-				 double * 		x_,
-				 WLS::integer_t          rwork_n_,
-				 double * 		rwork_)
+				 double * 			x_,
+				 wls_int_t          	rwork_n_,
+				 double * 			rwork_)
 {
   bool hasFailed;
-  inverseOperator_.compute(&hasFailed);
+  inverse_op_.compute(&hasFailed);
   if (hasFailed)
     {
-      std::cerr << "compute failed: " << inverseOperator_.get_error_message()  << std::endl;
+      std::cerr << "compute failed: " << inverse_op_.get_error_message()  << std::endl;
       exit(1);
     }
   
-  inverseOperator_.apply("No transpose",
+  inverse_op_.apply("No transpose",
 			 x_,
 			 rhs_,
 			 rwork_n_,
@@ -164,7 +163,7 @@ WLS::status_t calculate_solution(WLS::inverse_operator& 	inverseOperator_,
   
   if (hasFailed)
     {
-      std::cerr << "apply failed: " << inverseOperator_.get_error_message()  << std::endl;
+      std::cerr << "apply failed: " << inverse_op_.get_error_message()  << std::endl;
       exit(1);
     }
   return WLS::status_t::success;
@@ -206,7 +205,7 @@ int main(int 		argc,
   }
   
   bool verbose = cmd.get_logical("-v");
-  WLS::integer_t nt;
+  wls_int_t nt;
   if (!cmd.get_integer("--nt",&nt))
     {
       if (verbose)
@@ -235,7 +234,7 @@ int main(int 		argc,
   using real_t = double;
   
   WLS::sparse::matrix_t<real_t> a;
-  status_t status = WLS::Input::matrix_market_t::import(&a, a_filename);
+  status_t status = WLS::input::matrix_market_t::import(&a, a_filename);
   if (status)
     {
       return status;
@@ -243,17 +242,17 @@ int main(int 		argc,
 
   
   WLS::dense::matrix rhs;
-  status = WLS::Input::matrix_market_t::import(rhs, rhs_filename);
+  status = WLS::input::matrix_market_t::import(rhs, rhs_filename);
   if (status)
     {
-  return status;
-}
+      return status;
+    }
   WLS::dense::matrix x;
-  status = WLS::Input::matrix_market_t::import(x, x_filename);
+  status = WLS::input::matrix_market_t::import(x, x_filename);
   if (status)
     {
-  return status;
-}
+      return status;
+    }
 
   auto linear_operator = a.GetLinearOperator();
   
@@ -265,13 +264,13 @@ int main(int 		argc,
   y_h = rhs;
   y_h -= z_h;
   
-  { WLS::Output::matrix_market_t output(ofilename);
-  output << "%\n";
-  output << "% date: " << __DATE__ << "\n";  
-  output << "% residual linear system, matrix: '" << a_filename << "', rhs: '" << rhs_filename << ", sol: '" << x_filename << "'\n";
-  output << "%\n";
-  output << y; }
-  //  std::cout << x << std::endl;
+  { WLS::output::matrix_market_t output(ofilename);
+    output << "%\n";
+    output << "% date: " << __DATE__ << "\n";  
+    output << "% residual linear system, matrix: '" << a_filename << "', rhs: '" << rhs_filename << ", sol: '" << x_filename << "'\n";
+    output << "%\n";
+    output << y; }
+
   return 0;
  
 }

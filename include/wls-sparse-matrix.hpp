@@ -119,7 +119,7 @@ namespace WLS
     template <typename T> inline matrix_t<T>& matrix_t<T>::operator = (T value_) noexcept
     {
       auto nc = m_sparsityPattern->GetNC();
-      for (integer_t i = 0;i<nc;++i)
+      for (wls_int_t i = 0;i<nc;++i)
 	{
 	  this->m_x[i] = value_;
 	}
@@ -144,7 +144,7 @@ namespace WLS
     template <typename T> inline void matrix_t<T>::clear() noexcept
     {
       auto nc = m_sparsityPattern->GetNC();
-      for (integer_t i = 0;i<nc;++i)
+      for (wls_int_t i = 0;i<nc;++i)
 	{
 	  this->m_x[i] = 0.0;
 	}

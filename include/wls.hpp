@@ -17,21 +17,15 @@
 namespace WLS
 {
   
-#ifdef WLS_ILP64
-  using integer_t  = long long int;
-#else
-  using integer_t  = int;
-#endif
-  using integer_pt = integer_t*__restrict__;
 
   struct mat_indexing_t
   {
-  public: typedef enum ekind : integer_t
+  public: typedef enum ekind : wls_int_t
     { C = 0, Fortran } kind;
     
   private: kind m_value;
     
-  public: inline  mat_indexing_t(integer_t k)
+  public: inline  mat_indexing_t(wls_int_t k)
     : m_value((kind)k)
     {
     };
@@ -41,12 +35,12 @@ namespace WLS
     {
     };
     
-  public: inline operator integer_t() const
+  public: inline operator wls_int_t() const
     {
       return this->m_value;
     };
     
-  public: inline integer_t base() const
+  public: inline wls_int_t base() const
     {
       return (mat_indexing_t::Fortran == m_value) ? 1 : 0;
     } 
@@ -56,12 +50,12 @@ namespace WLS
   
   struct mat_storage_t
   {
-  public: typedef enum ekind : integer_t
+  public: typedef enum ekind : wls_int_t
     { row = 0, col } kind;
     
   private: kind m_value;
     
-  public: inline  mat_storage_t(integer_t k)
+  public: inline  mat_storage_t(wls_int_t k)
     : m_value((kind)k)
     {
     };
@@ -71,7 +65,7 @@ namespace WLS
     {
     };
     
-  public: inline operator integer_t() const
+  public: inline operator wls_int_t() const
     {
       return this->m_value;
     };
@@ -83,7 +77,7 @@ namespace WLS
 
   struct status_t
   {
-  public: typedef enum ekind : integer_t
+  public: typedef enum ekind : wls_int_t
     { 	success = 0,
 	error_memory,
 	invalid_index,
@@ -95,7 +89,7 @@ namespace WLS
     
   private: kind m_value;
     
-  public: inline  status_t(integer_t k)
+  public: inline  status_t(wls_int_t k)
     : m_value((kind)k)
     {
     };
@@ -105,7 +99,7 @@ namespace WLS
     {
     };
     
-  public: inline operator integer_t() const
+  public: inline operator wls_int_t() const
     {
       return this->m_value;
     };
@@ -151,7 +145,7 @@ namespace WLS
     //! @brief The size of the required temporary array of double to apply the linear operator.
     //! 
     //! @return The size of the required temporary vector to apply the linear operator.</returns>
-    virtual WLS::integer_t get_buffer_size() const = 0;
+    virtual wls_int_t get_buffer_size() const = 0;
   
     //! 
     //! @brief Compute the inverse operator.
@@ -173,7 +167,7 @@ namespace WLS
     virtual void apply(const char*transpose,
 		       double*__restrict__ y,
 		       const double * __restrict__ x,
-		       const WLS::integer_t  tmpSize,
+		       const wls_int_t  tmpSize,
 		       double*__restrict__  tmp,
 		       bool* outHasFailed) = 0;
     
@@ -182,18 +176,18 @@ namespace WLS
   
 };
 
-  inline int wls_sscanf(const char * str_,WLS::integer_t * i_,WLS::integer_t * j_)
+  inline int wls_sscanf(const char * str_,wls_int_t * i_,wls_int_t * j_)
   {
     return sscanf(str_,iformat " " iformat, i_, j_);
   };
 
-  inline int wls_sscanf(const char * str_,WLS::integer_t * m_,WLS::integer_t * n_,WLS::integer_t * nnz_)
+  inline int wls_sscanf(const char * str_,wls_int_t * m_,wls_int_t * n_,wls_int_t * nnz_)
   {
     return sscanf(str_,iformat " " iformat " " iformat, m_, n_, nnz_);
   };
 
   template<typename real_t>
-  inline int wls_sscanf(const char * str_,WLS::integer_t * i_,WLS::integer_t * j_,real_t*x_);
+  inline int wls_sscanf(const char * str_,wls_int_t * i_,wls_int_t * j_,real_t*x_);
 
   template<typename real_t>
   inline int wls_sscanf(const char * str_,real_t*x_);
@@ -211,13 +205,13 @@ namespace WLS
   }
 
   template<>
-  inline int wls_sscanf<double>(const char * str_,WLS::integer_t * i_,WLS::integer_t * j_,double*x_)
+  inline int wls_sscanf<double>(const char * str_,wls_int_t * i_,wls_int_t * j_,double*x_)
   {
     return sscanf(str_,iformat " " iformat " %le" , i_, j_, x_);
   }
 
   template<>
-  inline int wls_sscanf<float>(const char * str_,WLS::integer_t * i_,WLS::integer_t * j_,float*x_)
+  inline int wls_sscanf<float>(const char * str_,wls_int_t * i_,wls_int_t * j_,float*x_)
   {
     return sscanf(str_,iformat " " iformat " %e" , i_, j_, x_);
   }

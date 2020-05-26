@@ -62,7 +62,7 @@ namespace WLS
 	/// <summary>
 	/// The array of the integer parameters.
 	/// </summary>
-	WLS::integer_pt GetParamIntegers()
+	wls_int_p GetParamIntegers()
 	{
 	  return this->m_ipar;
 	};

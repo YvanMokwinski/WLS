@@ -11,10 +11,10 @@
 
 namespace WLS
 {
-  void partial_sums(integer_t size_,
-		  integer_t * count_);
+  void partial_sums(wls_int_t size_,
+		  wls_int_t * count_);
   
-  namespace Input
+  namespace input
   {
     //!
     //! @brief Reader for the matrix market format.
@@ -85,7 +85,7 @@ namespace WLS
 
 namespace WLS
 {
-  namespace Output
+  namespace output
   {
     struct matrix_market_t
     {
@@ -111,15 +111,15 @@ namespace WLS
 
 namespace WLS
 {
-void partial_sums(integer_t size_,
-		    integer_t * count_)
+void partial_sums(wls_int_t size_,
+		    wls_int_t * count_)
   {
-    for (integer_t i = 1;i <= size_; ++i)
+    for (wls_int_t i = 1;i <= size_; ++i)
       {
 	count_[i] += count_[i-1];
       }
   };
-  namespace Input
+  namespace input
   {
 
     matrix_market_t::~matrix_market_t()
@@ -144,8 +144,8 @@ void partial_sums(integer_t size_,
     wls_status_t matrix_market_t::import(dense::matrix& a_,const char * filename_)
       {
 	wls_status_t status;
-	Input::matrix_market_t matrix_market;
-	status = Input::matrix_market_t::create(&matrix_market,filename_);
+	matrix_market_t matrix_market;
+	status = matrix_market_t::create(&matrix_market,filename_);
 	if (status_t::success != status)
 	  {	    
 	    //fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
@@ -173,10 +173,10 @@ void partial_sums(integer_t size_,
     template<typename T>
     wls_status_t matrix_market_t::import(sparse::matrix_t<T>*a_,const char * filename_)
     {
-      Input::matrix_market_t matrix_market;
+      matrix_market_t matrix_market;
       wls_status_t status;
       
-      status = Input::matrix_market_t::create(&matrix_market,filename_);
+      status = matrix_market_t::create(&matrix_market,filename_);
       if (status_t::success != status)
 	{	    
 	  //fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
@@ -588,7 +588,7 @@ void partial_sums(integer_t size_,
 
 namespace WLS
 {
-  namespace Output
+  namespace output
   {
 
     matrix_market_t::matrix_market_t(const std::string& filename_)
