@@ -247,11 +247,12 @@ int main(int 		argc,
     {
       return status;
     }
+
   
+
+
   WLS::dense::matrix x(rhs.m,rhs.n);
 
-
-  
   WLS::Direct::MKL::Pardiso pardiso(a.GetN(),a.GetB(),a.GetI(),a.GetX());
 
   double* rwork = nullptr;
@@ -269,12 +270,16 @@ int main(int 		argc,
       rwork = nullptr;
     }
   
-  { WLS::output::matrix_market_t output(ofilename);
-  output << "%\n";
-  output << "% date: " << __DATE__ << "\n";  
-  output << "% solution linear system, matrix: '" << a_filename << "', rhs: '" << rhs_filename << "'\n";
-  output << "%\n";
-  output << x; }
+  {
+    WLS::output::matrix_market_t output(ofilename);
+#if 0
+    output << "%\n";
+    output << "% date: " << __DATE__ << "\n";  
+    output << "% solution linear system, matrix: '" << a_filename << "', rhs: '" << rhs_filename << "'\n";
+    output << "%\n";
+#endif
+    output << "%%MatrixMarket matrix array real general\n";
+    output << x; }
   //  std::cout << x << std::endl;
   return 0;
  

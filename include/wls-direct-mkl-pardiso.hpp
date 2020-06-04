@@ -561,7 +561,7 @@ namespace WLS
 	  return ErrorMessage(m_error); 
 	};
 	
-	~Pardiso()
+	virtual ~Pardiso()
 	{
 	  
 	  CallPardiso(&this->m_parameters,

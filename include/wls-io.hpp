@@ -185,48 +185,61 @@ void partial_sums(wls_int_t size_,
       wls_int_t mat_nrows,mat_ncols,mat_nnz;
       status = matrix_market.dimension(&mat_nrows,
 				       &mat_ncols,
-					 &mat_nnz);
-	if (status_t::success != status)
-	  {
-	    //      fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
-	    //      return status;
-	  }
+				       &mat_nnz);
+      
+      std::cout << "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd  " << mat_nrows << " " << mat_ncols << " " << mat_nnz << std::endl;
+      if (status_t::success != status)
+	{
+	  //      fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
+	  //      return status;
+	}
+      
+      //
+      // Allocate.
+      //
+      wls_int_t*mat_begin 	= (wls_int_t*)calloc((mat_nrows+1),sizeof(wls_int_t));
+      if (nullptr == mat_begin)
+	{
+	  status = status_t::error_memory;
+	  
+	  //      goto state_error;
+	}
 
-	//
-	// Allocate.
-	//
-	wls_int_t*mat_begin 	= (wls_int_t*)calloc((mat_nrows+1),sizeof(wls_int_t));
-	if (nullptr == mat_begin)
-	  {
-	    status = status_t::error_memory;
-	    //      goto state_error;
-	  }
-   
-	status = matrix_market.nnz(mat_storage_t::row,
-				   mat_nrows,
-				   mat_ncols,
-				   mat_nnz,
-				   mat_begin);
-	if (status)
-	  {
-	    //      fprintf(stderr,"error(=" iformat ")", (wls_int_t)status);
-	    //      return status;
-	  }
+      if (status)
+	{
+	  fprintf(stderr,"errorrrrrr(=" iformat ")\n", (wls_int_t)status);
+	  exit(1);
+	  //      return status;
+	}
+
+      
+      status = matrix_market.nnz(mat_storage_t::row,
+				 mat_nrows,
+				 mat_ncols,
+				 mat_nnz,
+				 mat_begin);
+      if (status)
+	{
+	  fprintf(stderr,"error nnz(=" iformat ")\n", (wls_int_t)status);
+	  exit(1);
+	  //      return status;
+	}
     
-	partial_sums(mat_nrows,
-			  mat_begin);
-
-
-	wls_int_t*mat_idx	= (wls_int_t*)malloc(sizeof(wls_int_t)*(mat_nnz));
-	if (nullptr == mat_idx)
+      partial_sums(mat_nrows,
+		   mat_begin);
+      
+      
+      wls_int_t*mat_idx	= (wls_int_t*)malloc(sizeof(wls_int_t)*(mat_nnz));
+      if (nullptr == mat_idx)
+	{
+	  status = status_t::error_memory;
+	  //      goto state_error;
+	}
+      
+      T*mat_values 	= (T*)malloc(sizeof(T)*(mat_nnz));
+      if (nullptr == mat_values)
 	  {
-	    status = status_t::error_memory;
-	    //      goto state_error;
-	  }
-    
-	T*mat_values 	= (T*)malloc(sizeof(T)*(mat_nnz));
-	if (nullptr == mat_values)
-	  {
+	    
 	    status = status_t::error_memory;
 	    //      goto state_error;
 	  }
@@ -241,7 +254,8 @@ void partial_sums(wls_int_t size_,
 							mat_values);
 	if (status)
 	  {
-	    //      std::cerr << "matrix_market_read_cs failed, error code " << status << std::endl;
+	    std::cerr << "matrix_market_read_cs failed, error code " << status << std::endl;
+	    exit(1);
 	    //      return status;
 	  }
 
@@ -336,20 +350,20 @@ void partial_sums(wls_int_t size_,
   //! @param direction_ 	The direction.
   //! @param nrows_ 		The direction.
   //!
-  wls_status_t matrix_market_t::nnz	(mat_storage_t 	storage_,
-				 wls_int_t 	nrows_,
-				 wls_int_t 	ncols_,
-				 wls_int_t 	nnz_,
-				 wls_int_p 	count_)
-  {
-    fpos_t pos;
-    fgetpos(m_in,&pos);
-
-    if (nullptr == count_) 	return status_t::invalid_pointer;
-    if (nrows_ < 0) 		return status_t::invalid_size;
-    if (ncols_ < 0) 		return status_t::invalid_size;
-    if (nnz_ < 0)   		return status_t::invalid_size;
-    wls_status_t 	status 		= status_t::success;
+    wls_status_t matrix_market_t::nnz	(mat_storage_t 	storage_,
+					 wls_int_t 	nrows_,
+					 wls_int_t 	ncols_,
+					 wls_int_t 	nnz_,
+					 wls_int_p 	count_)
+    {
+      fpos_t pos;
+      fgetpos(m_in,&pos);
+      
+      if (nullptr == count_) 	return status_t::invalid_pointer;
+      if (nrows_ < 0) 		return status_t::invalid_size;
+      if (ncols_ < 0) 		return status_t::invalid_size;
+      if (nnz_ < 0)   		return status_t::invalid_size;
+      wls_status_t 	status 		= status_t::success;
     wls_int_t 	nnz 		= 0;  
     { size_t len;
       char *line = nullptr;
@@ -388,6 +402,7 @@ void partial_sums(wls_int_t size_,
 
     if (nnz != nnz_)
       {
+	std::cout << "invalid calculation of nnz " << nnz << " " << nnz_<< std::endl;
 	return status_t::invalid_size;
       }
 

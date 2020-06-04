@@ -2,6 +2,8 @@
 
 #include "wla_traits.hpp"
 #include "wla_cache_op.hpp"
+#include "wls-sparse-matrix.hpp"
+#include "wls-dense-lapack.hpp"
 
 namespace WLS
 {

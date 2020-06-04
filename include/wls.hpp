@@ -135,7 +135,7 @@ namespace WLS
   class inverse_operator
   {
   public:
-  
+    virtual ~inverse_operator(){};
     //! 
     //! @brief The error message if any operation failed.
     //! 
