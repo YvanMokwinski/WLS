@@ -23,8 +23,16 @@ namespace WLS
     {
     private:      
       FILE * m_in{};
+      bool m_binary{};
       
     public:
+
+      //!
+      //! @brief is binary.
+      //!
+      //!
+      inline bool is_binary() const { return this->m_binary; };
+      
       //!
       //! @brief Get the dimension (number of rows, number of cols.
       //! @param [out] nrows_ 
@@ -50,7 +58,7 @@ namespace WLS
       //! @param nnz_ 	
       //! @param count_
       //! @return the status.
-      wls_status_t nnz		(mat_storage_t 	storage_,
+      wls_status_t count	(mat_storage_t 	storage_,
 				 wls_int_t 	nrows_,
 				 wls_int_t 	ncols_,
 				 wls_int_t 	nnz_,
@@ -73,10 +81,10 @@ namespace WLS
 					    T * 		values_);
 
       ~matrix_market_t();
-      static wls_status_t create(matrix_market_t*self_ ,const char * filename_);
-      static wls_status_t import(dense::matrix& a_,const char * filename_);
+      static wls_status_t create(matrix_market_t*self_ ,const char * filename_, bool binary_ = false);
+      static wls_status_t import(dense::matrix& a_,const char * filename_, bool binary_ = false);
       template<typename T>
-      static wls_status_t import(sparse::matrix_t<T>*a_,const char * filename_);
+      static wls_status_t import(sparse::matrix_t<T>*a_,const char * filename_, bool binary_ = false);
     };
   };
   
@@ -131,9 +139,10 @@ void partial_sums(wls_int_t size_,
 	}
     };
     
-    wls_status_t matrix_market_t::create(matrix_market_t*self_ ,const char * filename_)
+    wls_status_t matrix_market_t::create(matrix_market_t*self_ ,const char * filename_, bool binary_)
     {
-      self_->m_in  = fopen(filename_,"r");
+      self_->m_binary = binary_;
+      self_->m_in  = fopen(filename_,(binary_) ? "rb" :  "r");
       if (!self_->m_in)
 	{
 	  return status_t::invalid_file;
@@ -141,11 +150,11 @@ void partial_sums(wls_int_t size_,
       return status_t::success;		    
     };
 
-    wls_status_t matrix_market_t::import(dense::matrix& a_,const char * filename_)
+    wls_status_t matrix_market_t::import(dense::matrix& a_,const char * filename_, bool binary_)
       {
 	wls_status_t status;
 	matrix_market_t matrix_market;
-	status = matrix_market_t::create(&matrix_market,filename_);
+	status = matrix_market_t::create(&matrix_market,filename_, binary_);
 	if (status_t::success != status)
 	  {	    
 	    //fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
@@ -161,22 +170,22 @@ void partial_sums(wls_int_t size_,
 	  }
 	double * x = (double*)malloc(sizeof(double)*mat_nrows*mat_ncols);
 	dense::matrix::define(a_,mat_nrows,mat_ncols,x,mat_nrows);
-	
 	status = matrix_market.create_dense(mat_nrows,
 					    mat_ncols,
 					    x,
 					    mat_nrows);
+	
 	return status;
       };
 
 
     template<typename T>
-    wls_status_t matrix_market_t::import(sparse::matrix_t<T>*a_,const char * filename_)
+    wls_status_t matrix_market_t::import(sparse::matrix_t<T>*a_,const char * filename_, bool binary_)
     {
       matrix_market_t matrix_market;
       wls_status_t status;
       
-      status = matrix_market_t::create(&matrix_market,filename_);
+      status = matrix_market_t::create(&matrix_market,filename_, binary_);
       if (status_t::success != status)
 	{	    
 	  //fprintf(stderr,"status(=" iformat ")", (wls_int_t)status);
@@ -212,22 +221,24 @@ void partial_sums(wls_int_t size_,
 	  //      return status;
 	}
 
-      
-      status = matrix_market.nnz(mat_storage_t::row,
-				 mat_nrows,
-				 mat_ncols,
-				 mat_nnz,
-				 mat_begin);
-      if (status)
+
+      if (!matrix_market.is_binary())
 	{
-	  fprintf(stderr,"error nnz(=" iformat ")\n", (wls_int_t)status);
-	  exit(1);
-	  //      return status;
-	}
-    
-      partial_sums(mat_nrows,
-		   mat_begin);
+	  status = matrix_market.count(mat_storage_t::row,
+				       mat_nrows,
+				       mat_ncols,
+				       mat_nnz,
+				       mat_begin);
+	  if (status)
+	    {
+	      fprintf(stderr,"error nnz(=" iformat ")\n", (wls_int_t)status);
+	      exit(1);
+	      //      return status;
+	    }
       
+	  partial_sums(mat_nrows,
+		       mat_begin);	  
+	}
       
       wls_int_t*mat_idx	= (wls_int_t*)malloc(sizeof(wls_int_t)*(mat_nnz));
       if (nullptr == mat_idx)
@@ -274,14 +285,22 @@ void partial_sums(wls_int_t size_,
       
 
     wls_status_t matrix_market_t::dimension(wls_int_p 		nrows_,
-					wls_int_p 		ncols_,
-					wls_int_p 		nnz_)
+					    wls_int_p 		ncols_,
+					    wls_int_p 		nnz_)
     {
       if (nullptr == nrows_) 	return status_t::invalid_pointer;
       if (nullptr == ncols_) 	return status_t::invalid_pointer;
       if (nullptr == nnz_) 	return status_t::invalid_pointer;
-      
+      wls_int_t f;
       wls_status_t status = status_t::success;
+      if (this->m_binary)
+	{
+	  f = fread(nrows_,sizeof(wls_int_t),1,this->m_in);
+	  f = fread(ncols_,sizeof(wls_int_t),1,this->m_in);
+	  f = fread(nnz_,sizeof(wls_int_t),1,this->m_in);
+	  if (f){}
+	  return status_t::success;	  
+	}
       
       nrows_[0] = 0;
       ncols_[0] = 0;
@@ -318,7 +337,14 @@ void partial_sums(wls_int_t size_,
       if (nullptr == ncols_) 	return status_t::invalid_pointer;
       
       wls_status_t status = status_t::success;
-      
+      if (this->m_binary)
+	{
+	  size_t f = fread(nrows_,sizeof(wls_int_t),1,this->m_in);
+	  f = fread(ncols_,sizeof(wls_int_t),1,this->m_in);
+	  if (f){}
+	  return status_t::success;	  
+	}
+
       nrows_[0] = 0;
       ncols_[0] = 0;
       
@@ -350,7 +376,7 @@ void partial_sums(wls_int_t size_,
   //! @param direction_ 	The direction.
   //! @param nrows_ 		The direction.
   //!
-    wls_status_t matrix_market_t::nnz	(mat_storage_t 	storage_,
+    wls_status_t matrix_market_t::count	(mat_storage_t 	storage_,
 					 wls_int_t 	nrows_,
 					 wls_int_t 	ncols_,
 					 wls_int_t 	nnz_,
@@ -364,48 +390,48 @@ void partial_sums(wls_int_t size_,
       if (ncols_ < 0) 		return status_t::invalid_size;
       if (nnz_ < 0)   		return status_t::invalid_size;
       wls_status_t 	status 		= status_t::success;
-    wls_int_t 	nnz 		= 0;  
-    { size_t len;
-      char *line = nullptr;
-      wls_int_t ij[2];
-      for (ssize_t read = getline(&line, &len, m_in);
-	   read != -1;
-	   read = getline(&line, &len, m_in))
-	{
-	  if (line[0] != '%')
-	    {
-	      if (2 != wls_sscanf(line, &ij[0], &ij[1]))
-		{
-		  status = status_t::invalid_format;
-		  break;
-		}
-	      else if (ij[0] <= 0 || ij[0] > nrows_ || ij[1] <= 0 || ij[1] > ncols_)
-		{
+      wls_int_t 	nnz 		= 0;  
+      { size_t len;
+	char *line = nullptr;
+	wls_int_t ij[2];
+	for (ssize_t read = getline(&line, &len, m_in);
+	     read != -1;
+	     read = getline(&line, &len, m_in))
+	  {
+	    if (line[0] != '%')
+	      {
+		if (2 != wls_sscanf(line, &ij[0], &ij[1]))
+		  {
+		    status = status_t::invalid_format;
+		    break;
+		  }
+		else if (ij[0] <= 0 || ij[0] > nrows_ || ij[1] <= 0 || ij[1] > ncols_)
+		  {
 #ifndef NDEBUG
-		  fprintf(stderr,"// diagonostic, error from invalid index line %d of source file\n",__LINE__);
+		    fprintf(stderr,"// diagonostic, error from invalid index line %d of source file\n",__LINE__);
 #endif
-		  status = status_t::invalid_index;
-		  break;
-		}
-	      else
-		{
+		    status = status_t::invalid_index;
+		    break;
+		  }
+		else
+		  {
 		  count_[ij[storage_]-1+1] += 1;
 		  ++nnz;
-		}
-	    }
-	} if (line) { free(line); } }
-    
+		  }
+	      }
+	  } if (line) { free(line); } }
+      
     if (status_t::success != status)
       {
 	return status;
       }
-
+    
     if (nnz != nnz_)
       {
 	std::cout << "invalid calculation of nnz " << nnz << " " << nnz_<< std::endl;
 	return status_t::invalid_size;
       }
-
+    
     fsetpos(m_in,&pos);
     return status;  
   };
@@ -418,10 +444,23 @@ void partial_sums(wls_int_t size_,
 					       wls_int_t 		ldx_)
     {
 
-      if (nullptr == x_) 	return status_t::invalid_pointer;
-      if (nrows_ < 0) 		return status_t::invalid_size;
-      if (ncols_ < 0) 		return status_t::invalid_size;
+      if (nullptr == x_) return status_t::invalid_pointer;
+      if (nrows_ < 0) 	 return status_t::invalid_size;
+      if (ncols_ < 0) 	 return status_t::invalid_size;
       if (ldx_ < nrows_) return status_t::invalid_size;
+      if (ldx_!=nrows_)
+	{
+	  fprintf(stderr,"matrix market create dense, must be compact.\n");
+	  exit(1);
+	}
+      if (this->m_binary)
+	{
+      size_t f = fread(x_,sizeof(T),nrows_*ncols_,this->m_in);
+      if (f){}
+	  return status_t::success;	  
+	}
+      
+      
       { size_t len;
 	char * line = nullptr;
 	for (wls_int_t irow=0;irow<nrows_;++irow)
@@ -452,7 +491,21 @@ void partial_sums(wls_int_t size_,
 							   wls_int_p 		idx_,
 							   T * 			values_)
     {
-
+      if (this->m_binary)
+	{
+      size_t f = fread(begin_,sizeof(wls_int_t),nrows_+1,this->m_in);
+	  f = fread(idx_,sizeof(wls_int_t),begin_[nrows_]-1,this->m_in);
+	  f= fread(values_,sizeof(T),begin_[nrows_]-1,this->m_in);
+	  if (f){}
+	  wls_int_t idx_base = indexing_.base();
+	  if (idx_base==0)
+	    {
+      for (wls_int_t i=0;i<=nrows_;++i) begin_[i]-=1;
+      for (wls_int_t i=0;i<begin_[nrows_];++i) idx_[i]-=1;
+    }
+	  return status_t::success;
+	}
+      
       if (nullptr == begin_) 	return status_t::invalid_pointer;
       if (nullptr == idx_) 	return status_t::invalid_pointer;
       if (nullptr == values_) 	return status_t::invalid_pointer;
@@ -627,7 +680,7 @@ namespace WLS
         
     std::ostream& operator << (std::ostream &out_,
 			       const dense::matrix&that_)    
-    {
+    {      
       out_ << that_.m << " " << that_.n << std::endl;
       for (wls_int_t i=0;i < that_.m;++i)
 	{

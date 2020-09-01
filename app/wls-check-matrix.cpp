@@ -244,7 +244,7 @@ int main(int 		argc,
 
 
 
-  status = matrix_market.nnz(WLS::mat_storage_t::row,
+  status = matrix_market.count(WLS::mat_storage_t::row,
 			     mat_nrows,
 			     mat_ncols,
 			     mat_nnz,

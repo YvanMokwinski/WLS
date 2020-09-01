@@ -233,7 +233,7 @@ int main(int 		argc,
   
   WLS::sparse::matrix_t<real_t> a;
   status_t status = WLS::input::matrix_market_t::import(&a,
-							a_filename);
+							a_filename,true);
   if (status)
     {
       return status;
@@ -242,7 +242,7 @@ int main(int 		argc,
   
   WLS::dense::matrix rhs;
   status = WLS::input::matrix_market_t::import(rhs,
-					       rhs_filename);
+					       rhs_filename,true);
   if (status)
     {
       return status;
